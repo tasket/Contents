@@ -20,7 +20,11 @@ below should be adequate to setup a working VPN connection.
 
 ### Proxy VMs That Provide Network Services
 
-One of the best unique features of Qubes OS is its special type of qube that we'll call a ProxyVM in this document. The special thing is that your AppVMs see this as a NetVM (or uplink), and your NetVMs (sys-net) see it as a downstream. Because of this, you can place a ProxyVM between your AppVMs and your NetVM where it functions much like a router. This is how the default sys-firewall qube functions.
+One of the best unique features of Qubes OS is its special type of qube that we'll call a ProxyVM in this document.
+Note that this type of qube is also referred to as a "qube providing networking" in other documentation.
+The special thing is that your AppVMs see this as a NetVM (or uplink), and your NetVMs (sys-net) see it as a downstream.
+Because of this, you can place a ProxyVM between your AppVMs and your NetVM where it functions much like a router.
+This is how the default sys-firewall qube functions.
 
 Using a ProxyVM to set up a VPN client gives you the ability to:
 
@@ -28,7 +32,9 @@ Using a ProxyVM to set up a VPN client gives you the ability to:
 - Concretely prevent network traffic from leaking _around_ the VPN.
 - Easily control which of your AppVMs are connected through your VPN by simply setting it as a NetVM of the desired AppVM.
 
+This concept and the steps below will result in the following layout:
 
+sys-net -- sys-fw -- sys-vpn -- untrusted(AppVM)
 
 
 Set up a ProxyVM as a VPN gateway using the *qubes-tunnel* service
@@ -40,7 +46,7 @@ This method has extended anti-leak features that also make the connection _fail 
 
    Choose a Debian or Fedora template to run the VPN VM (these instructions have been tested with Fedora 33 and Debian 10 templates) and install the `qubes-repo-contrib` package. Next, install `qubes-tunnel` and the VPN client (either `openvpn` or `wireguard`).
 
-   Note:  If your TemplateVM is one of the "minimal" types, you may need to install additional networking packages as well .....PUT LINK HERE.....
+   Note:  If your TemplateVM is one of the "minimal" types, you may need to [install additional networking packages](https://www.qubes-os.org/doc/templates/minimal/) as well.
 
    Shut down the template VM when finished with the package installation.
 
@@ -51,7 +57,7 @@ This method has extended anti-leak features that also make the connection _fail 
    ![Create\_New\_VM.png](/attachment/wiki/VPN/Create_New_VM.png)
 
 
-3. Add the VPN configurtion files
+3. Add the VPN configuration files
 
    Make sure the new VPN VM and its TemplateVM are not running.
    Run a terminal (CLI) in the VPN VM -- this will start the VM.
@@ -84,7 +90,9 @@ This method has extended anti-leak features that also make the connection _fail 
 
        sudo openvpn --config qtunnel.conf --auth-user-pass
 
-   Watch for status messages that indicate whether the connection is successful; In the case of `openvpn` it should display _"Initialization sequence completed"_. Testing can be done from another VPN VM terminal window using a `ping` command like:
+   Watch for status messages that indicate whether the connection is successful; In the case of `openvpn` it should display _"Initialization sequence completed"_.
+   Make sure you see a successful connection message before moving on to the next step.
+   Testing can be done from another VPN VM terminal window using a `ping` command like:
 
        ping -c20 1.1.1.1
 
@@ -126,6 +134,7 @@ You can do this in the Services tab in Qubes VM Manager or on the command-line:
 
     qvm-service -e <name> qubes-updates-proxy
 
+See the full [`qubes-tunnel`](https://github.com/QubesOS-contrib/qubes-tunnel/blob/master/README.md) documentation and source for more detail, if needed or curious.
 
 Troubleshooting
 ---------------
